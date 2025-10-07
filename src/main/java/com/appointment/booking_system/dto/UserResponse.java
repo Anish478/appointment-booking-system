@@ -1,5 +1,4 @@
 package com.appointment.booking_system.dto;
-import com.appointment.booking_system.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
