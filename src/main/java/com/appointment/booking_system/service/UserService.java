@@ -1,11 +1,15 @@
 package com.appointment.booking_system.service;
 
 import com.appointment.booking_system.dto.LoginRequest;
-import com.appointment.booking_system.dto.RegisterRequest;
-import com.appointment.booking_system.dto.UserResponse;
+import com.appointment.booking_system.exception.EmailAlreadyExists;
+import com.appointment.booking_system.exception.UserNotFoundException;
+import com.appointment.booking_system.exception.WrongPasswordException;
 import com.appointment.booking_system.model.User;
 import com.appointment.booking_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,42 +18,30 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserResponse register(RegisterRequest request) {
+    public User register(User user) throws EmailAlreadyExists {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new EmailAlreadyExists("Email already Exists!");
         }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); 
-        user.setName(request.getName());
-        user.setRole(request.getRole());
+        
 
-        user = userRepository.save(user);
+        return  userRepository.save(user);
 
-        return new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getRole()
-        );
+        
     }
 
-    public UserResponse login(LoginRequest request) {
+    public LoginRequest login(LoginRequest login)  throws UserNotFoundException, WrongPasswordException{
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
-
-        if (!request.getPassword().equals(user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+        Optional<User> user = userRepository.findByEmail(login.getEmail());
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found with email: " + login.getEmail());
         }
 
-        return new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getRole()
-        );
+        if (!login.getPassword().equals(user.get().getPassword())) {
+            throw new WrongPasswordException("Invalid email or password");
+        }
+
+        return login;
     }
 }
