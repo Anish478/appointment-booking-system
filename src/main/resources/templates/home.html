@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Appointment Booking System</title>
+  </head>
+  
+  <body>
+    <h1>Welcome to Appointment Booking System</h1>
+    
+    <div th:if="${user != null}">
+      <h2>Welcome, <span th:text="${user.name}">User</span>!</h2>
+      
+      <div th:if="${user.role == 'STUDENT' or user.role == 'TA'}">
+        <h3>Student Options:</h3>
+        <ul>
+          <li><a th:href="@{/appointments/book}">Book New Appointment</a></li>
+          <li><a th:href="@{/appointments/my}">View My Appointments</a></li>
+          <li><a th:href="@{/profile}">My Profile</a></li>
+        </ul>
+      </div>
+
+      <div th:if="${user.role == 'PROFESSOR'}">
+        <h3>Professor Options:</h3>
+        <ul>
+          <li><a th:href="@{/appointments/schedule}">Manage Schedule</a></li>
+          <li><a th:href="@{/appointments/requests}">View Appointment Requests</a></li>
+          <li><a th:href="@{/appointments/upcoming}">Upcoming Appointments</a></li>
+          <li><a th:href="@{/profile}">My Profile</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div th:if="${user == null}">
+      <p>Please log in to access the system.</p>
+      <div>
+        <a th:href="@{/login}">Login</a> | 
+        <a th:href="@{/register}">Register</a>
+      </div>
+    </div>
+
+  </body>
+</html>
