@@ -40,17 +40,17 @@ public class AppointmentService {
         
         int slotNumber = 1;
         
-        // Generate appointment slots
+        
         while (currentStartTime.isBefore(endTimeLimit)) {
-            // Calculate the end time for this slot
+            
             LocalTime currentEndTime = currentStartTime.plusMinutes(request.getMeetingDuration());
             
-            // Check if the slot would go beyond the end time limit
+            
             if (currentEndTime.isAfter(endTimeLimit)) {
-                break; // Stop creating slots if they would exceed the end time
+                break; 
             }
             
-            // Create appointment
+            
             Appointment appointment = new Appointment();
             appointment.setTitle(request.getTitle() + " - Slot " + slotNumber);
             appointment.setDescription(request.getDescription());
@@ -60,10 +60,10 @@ public class AppointmentService {
             appointment.setEndTime(currentEndTime);
             appointment.setLocation(request.getLocation());
             
-            // Save the appointment
+            
             appointments.add(appointmentRepository.save(appointment));
             
-            // Move to next slot (add meeting duration + gap)
+            
             currentStartTime = currentEndTime.plusMinutes(request.getGapBetweenMeetings());
             slotNumber++;
         }

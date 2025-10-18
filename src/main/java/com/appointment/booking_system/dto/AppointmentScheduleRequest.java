@@ -22,7 +22,7 @@ public class AppointmentScheduleRequest {
     private String description;
 
     @NotBlank(message = "Appointment type is required")
-    private String appointmentType; // "Group" or "Individual"
+    private String appointmentType; 
 
     @NotNull(message = "Date is required")
     private LocalDate date;
@@ -35,11 +35,11 @@ public class AppointmentScheduleRequest {
 
     @NotNull(message = "Meeting duration is required")
     @Min(value = 5, message = "Meeting duration must be at least 5 minutes")
-    private Integer meetingDuration; // in minutes
+    private Integer meetingDuration; 
 
     @NotNull(message = "Gap between meetings is required")
     @Min(value = 0, message = "Gap cannot be negative")
-    private Integer gapBetweenMeetings; // in minutes
+    private Integer gapBetweenMeetings; 
 
     @NotBlank(message = "Location is required")
     private String location;
