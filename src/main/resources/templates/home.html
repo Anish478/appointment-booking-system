@@ -2,38 +2,40 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Appointment Booking System</title>
+    <title>Appointment Scheduler</title>
   </head>
   
   <body>
-    <h1>Welcome to Appointment Booking System</h1>
+    <h1>Welcome to Appointment Scheduler System</h1>
     
     <div th:if="${user != null}">
-      <h2>Welcome, <span th:text="${user.name}">User</span>!</h2>
+      <h2>Hi, <span th:text="${user.name}">User</span>!</h2>
       
       <div th:if="${user.role == 'STUDENT' or user.role == 'TA'}">
-        <h3>Student Options:</h3>
-        <ul>
-          <li><a th:href="@{/appointments/book}">Book New Appointment</a></li>
-          <li><a th:href="@{/appointments/my}">View My Appointments</a></li>
-          <li><a th:href="@{/profile}">My Profile</a></li>
-        </ul>
+        <div class="grid">
+          <div class="option-group">
+            <h4>View Available Appointments</h4>
+            <a th:href="@{/appointments/book}">View Available Appointments</a>
+          </div>
+        </div>
       </div>
 
       <div th:if="${user.role == 'PROFESSOR'}">
-        <h3>Professor Options:</h3>
-        <ul>
-          <li><a th:href="@{/appointments/schedule}">Manage Schedule</a></li>
-          <li><a th:href="@{/appointments/requests}">View Appointment Requests</a></li>
-          <li><a th:href="@{/appointments/upcoming}">Upcoming Appointments</a></li>
-          <li><a th:href="@{/profile}">My Profile</a></li>
-        </ul>
+        <div class="grid">
+          <div class="option-group">
+            <h4>Create New Appointment</h4>
+            <a th:href="@{/appointments/schedule}">Create New Appointment</a>
+          </div>
+          <div class="option-group">
+            <h4>Upcoming Appointments</h4>
+            <a th:href="@{/appointments/upcoming}">View Available Appointments</a>
+          </div>
+        </div>
       </div>
-
     </div>
 
     <div th:if="${user == null}">
-      <p>Please log in to access the system.</p>
+      <h3>Please log in/register to access!</h3>
       <div>
         <a th:href="@{/login}">Login</a> | 
         <a th:href="@{/register}">Register</a>

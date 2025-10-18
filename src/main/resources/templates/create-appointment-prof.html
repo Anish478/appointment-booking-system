@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Create Appointment Slots - Booking System</title>
+  </head>
+  
+  <body>
+    <h1>Create Appointment Slots</h1>
+    <a th:href="@{/}">Home Page</a>
+    <form method="POST" th:action="@{/appointments}" th:object="${scheduleRequest}">
+      <div class="form-group">
+        <label for="title">Appointment Title :</label>
+        <input type="text" th:field="*{title}" id="title" required placeholder="e.g., Office Hours"/>
+        <span class="validationError" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Description :</label>
+        <textarea th:field="*{description}" id="description" required placeholder="Purpose of the appointments"></textarea>
+        <span class="validationError" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="appointmentType">Appointment Type :</label>
+        <select th:field="*{appointmentType}" id="appointmentType" required>
+          <option value="">Select type</option>
+          <option value="Group">Group</option>
+          <option value="Individual">Individual</option>
+        </select>
+        <span class="validationError" th:if="${#fields.hasErrors('appointmentType')}" th:errors="*{appointmentType}">Type Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="date">Date :</label>
+        <input type="date" th:field="*{date}" id="date" required/>
+        <span class="validationError" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Date Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="startTime">Start Time :</label>
+        <input type="time" th:field="*{startTime}" id="startTime" required/>
+        <span class="validationError" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}">Start Time Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="endTime">End Time :</label>
+        <input type="time" th:field="*{endTime}" id="endTime" required/>
+        <span class="validationError" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}">End Time Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="meetingDuration">Meeting Duration (minutes) :</label>
+        <input type="number" th:field="*{meetingDuration}" id="meetingDuration" required min="5" step="5" placeholder="e.g., 30"/>
+        <span class="validationError" th:if="${#fields.hasErrors('meetingDuration')}" th:errors="*{meetingDuration}">Duration Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="gapBetweenMeetings">Gap Between Meetings (minutes) :</label>
+        <input type="number" th:field="*{gapBetweenMeetings}" id="gapBetweenMeetings" required min="0" step="5" placeholder="e.g., 10"/>
+        <span class="validationError" th:if="${#fields.hasErrors('gapBetweenMeetings')}" th:errors="*{gapBetweenMeetings}">Gap Error</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location :</label>
+        <input type="text" th:field="*{location}" id="location" required placeholder="e.g., Room 301"/>
+        <span class="validationError" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</span>
+      </div>
+      
+      <div class="preview" id="preview" style="display: none;">
+        <h3>Preview:</h3>
+        <p id="previewText"></p>
+      </div>
+      
+      <div>
+        <button type="submit">Create Appointment Slots</button>
+        <button type="button" onclick="calculateSlots()">Preview Slots</button>
+        <a th:href="@{/}">Cancel</a>
+      </div>
+    </form>
+
+    <script>
+      function calculateSlots() {
+        const startTime = document.getElementById('startTime').value;
+        const endTime = document.getElementById('endTime').value;
+        const meetingDuration = parseInt(document.getElementById('meetingDuration').value) || 0;
+        const gap = parseInt(document.getElementById('gapBetweenMeetings').value) || 0;
+        
+        if (!startTime || !endTime || !meetingDuration) {
+          alert('Please fill in start time, end time, and meeting duration first.');
+          return;
+        }
+        
+        const start = new Date('2000-01-01T' + startTime);
+        const end = new Date('2000-01-01T' + endTime);
+        
+        let count = 0;
+        let current = new Date(start);
+        let preview = 'Appointment slots will be created:<br/><br/>';
+        
+        while (current < end) {
+          let slotEnd = new Date(current.getTime() + meetingDuration * 60000);
+          
+          if (slotEnd > end) {
+            break;
+          }
+          
+          count++;
+          preview += 'Slot ' + count + ': ' + 
+                     current.toTimeString().substring(0, 5) + ' - ' + 
+                     slotEnd.toTimeString().substring(0, 5) + '<br/>';
+          
+          current = new Date(slotEnd.getTime() + gap * 60000);
+        }
+        
+        preview += '<br/><strong>Total slots: ' + count + '</strong>';
+        
+        document.getElementById('previewText').innerHTML = preview;
+        document.getElementById('preview').style.display = 'block';
+      }
+    </script>
+
+  </body>
+</html>
+
