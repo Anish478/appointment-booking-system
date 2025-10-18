@@ -67,59 +67,11 @@
         <span class="validationError" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</span>
       </div>
       
-      <div class="preview" id="preview" style="display: none;">
-        <h3>Preview:</h3>
-        <p id="previewText"></p>
-      </div>
-      
       <div>
         <button type="submit">Create Appointment Slots</button>
-        <button type="button" onclick="calculateSlots()">Preview Slots</button>
         <a th:href="@{/}">Cancel</a>
       </div>
     </form>
-
-    <script>
-      function calculateSlots() {
-        const startTime = document.getElementById('startTime').value;
-        const endTime = document.getElementById('endTime').value;
-        const meetingDuration = parseInt(document.getElementById('meetingDuration').value) || 0;
-        const gap = parseInt(document.getElementById('gapBetweenMeetings').value) || 0;
-        
-        if (!startTime || !endTime || !meetingDuration) {
-          alert('Please fill in start time, end time, and meeting duration first.');
-          return;
-        }
-        
-        const start = new Date('2000-01-01T' + startTime);
-        const end = new Date('2000-01-01T' + endTime);
-        
-        let count = 0;
-        let current = new Date(start);
-        let preview = 'Appointment slots will be created:<br/><br/>';
-        
-        while (current < end) {
-          let slotEnd = new Date(current.getTime() + meetingDuration * 60000);
-          
-          if (slotEnd > end) {
-            break;
-          }
-          
-          count++;
-          preview += 'Slot ' + count + ': ' + 
-                     current.toTimeString().substring(0, 5) + ' - ' + 
-                     slotEnd.toTimeString().substring(0, 5) + '<br/>';
-          
-          current = new Date(slotEnd.getTime() + gap * 60000);
-        }
-        
-        preview += '<br/><strong>Total slots: ' + count + '</strong>';
-        
-        document.getElementById('previewText').innerHTML = preview;
-        document.getElementById('preview').style.display = 'block';
-      }
-    </script>
-
   </body>
 </html>
 

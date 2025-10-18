@@ -25,13 +25,7 @@ public class AppointmentService {
     public List<Appointment> findAll() {
         return appointmentRepository.findAll();
     }
-    
-    /**
-     * Creates multiple appointment slots based on the schedule request
-     * 
-     * @param request The schedule request with time range, duration, and gap
-     * @return List of created appointments
-     */
+
     public List<Appointment> createAppointmentSlots(AppointmentScheduleRequest request) {
         List<Appointment> appointments = new ArrayList<>();
         
