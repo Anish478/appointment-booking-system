@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: booking-system
+    runtime: docker
+    plan: free
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: JAVA_OPTS
+        value: "-Xmx512m -Xms256m"
+
