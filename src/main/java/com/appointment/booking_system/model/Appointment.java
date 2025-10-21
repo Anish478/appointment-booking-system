@@ -22,9 +22,6 @@ public class Appointment {
     private String title;
 
     @NotBlank
-    private String description;
-
-    @NotBlank
     private String appointmentType; 
 
     @NotNull

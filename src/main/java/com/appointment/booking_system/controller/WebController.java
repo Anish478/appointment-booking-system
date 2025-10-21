@@ -126,6 +126,12 @@ public class WebController {
         return "redirect:/appointments/book";
     }
     
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+    
     private User getCurrentUser(HttpSession session) {
         return (User) session.getAttribute("user");
     }
