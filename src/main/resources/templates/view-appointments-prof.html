@@ -20,7 +20,8 @@
             <p><strong>Time:</strong> <span th:text="${appointment.startTime}">Start Time</span> - <span th:text="${appointment.endTime}">End Time</span></p>
             <p><strong>Type:</strong> <span th:text="${appointment.appointmentType}">Appointment Type</span></p>
             <p><strong>Location:</strong> <span th:text="${appointment.location}">Location</span></p>
-            <p><strong>Description:</strong> <span th:text="${appointment.description}">Description</span></p>
+            <p><strong>Status:</strong> <span th:text="${appointment.status}">Status</span></p>
+            <p th:if="${appointment.status == 'BOOKED'}"><strong>Booked by:</strong> <span th:text="${appointment.studentEmail}">Student Email</span></p>
             <hr>
           </div>
         </div>

@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.validation.Errors;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpSession;
@@ -112,6 +113,17 @@ public class WebController {
         model.addAttribute("appointments", appointments);
         model.addAttribute("user", user);
         return "view-appointments-prof";
+    }
+    
+    @PostMapping("/appointments/{id}/book")
+    public String bookAppointment(@PathVariable int id, HttpSession session) {
+        User user = getCurrentUser(session);
+        if (user == null) {
+            return "redirect:/login";
+        }
+        
+        appointmentService.bookAppointment(id, user.getEmail());
+        return "redirect:/appointments/book";
     }
     
     private User getCurrentUser(HttpSession session) {

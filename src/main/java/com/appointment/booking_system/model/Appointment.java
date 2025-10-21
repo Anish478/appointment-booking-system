@@ -40,6 +40,10 @@ public class Appointment {
     @Size(max = 120)
     private String location;
 
+    private String status = "AVAILABLE"; 
+
+    private String studentEmail; 
+
     @AssertTrue(message = "End time must be after start time")
     public boolean isTimeRangeValid() {
         return startTime != null && endTime != null && endTime.isAfter(startTime);

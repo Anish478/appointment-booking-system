@@ -26,6 +26,20 @@ public class AppointmentService {
         return appointmentRepository.findAll();
     }
 
+    public Appointment findById(int id) {
+        return appointmentRepository.findById(id).orElse(null);
+    }
+
+    public Appointment bookAppointment(int appointmentId, String studentEmail) {
+        Appointment appointment = findById(appointmentId);
+        if (appointment != null && "AVAILABLE".equals(appointment.getStatus())) {
+            appointment.setStatus("BOOKED");
+            appointment.setStudentEmail(studentEmail);
+            return appointmentRepository.save(appointment);
+        }
+        return null;
+    }
+
     public List<Appointment> createAppointmentSlots(AppointmentScheduleRequest request) {
         List<Appointment> appointments = new ArrayList<>();
         
@@ -47,13 +61,13 @@ public class AppointmentService {
             
             Appointment appointment = new Appointment();
             appointment.setTitle(request.getTitle() + " - Slot " + slotNumber);
-            appointment.setDescription(request.getDescription());
             appointment.setAppointmentType(request.getAppointmentType());
             appointment.setDate(request.getDate());
             appointment.setStartTime(currentStartTime);
             appointment.setEndTime(currentEndTime);
             appointment.setLocation(request.getLocation());
-            
+            appointment.setStatus("AVAILABLE");
+            appointment.setStudentEmail(null);
             
             appointments.add(appointmentRepository.save(appointment));
             
