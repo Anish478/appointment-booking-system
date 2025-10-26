@@ -1,5 +1,6 @@
 package com.appointment.booking_system.service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,38 +43,43 @@ public class AppointmentService {
 
     public List<Appointment> createAppointmentSlots(AppointmentScheduleRequest request) {
         List<Appointment> appointments = new ArrayList<>();
+        int totalSlotNumber = 1;
         
-        LocalTime currentStartTime = request.getStartTime();
-        LocalTime endTimeLimit = request.getEndTime();
-        
-        int slotNumber = 1;
-        
-        
-        while (currentStartTime.isBefore(endTimeLimit)) {
+        // Loop through each day configuration
+        for (int i = 0; i < request.getDates().size(); i++) {
             
-            LocalTime currentEndTime = currentStartTime.plusMinutes(request.getMeetingDuration());
+            // Parse date and times for this day
+            LocalDate date = LocalDate.parse(request.getDates().get(i));
+            LocalTime dayStartTime = LocalTime.parse(request.getStartTimes().get(i));
+            LocalTime dayEndTime = LocalTime.parse(request.getEndTimes().get(i));
             
+            LocalTime currentStartTime = dayStartTime;
             
-            if (currentEndTime.isAfter(endTimeLimit)) {
-                break; 
+            // Create slots for this date
+            while (currentStartTime.isBefore(dayEndTime)) {
+                
+                LocalTime currentEndTime = currentStartTime.plusMinutes(request.getMeetingDuration());
+                
+                if (currentEndTime.isAfter(dayEndTime)) {
+                    break; 
+                }
+                
+                // Create appointment
+                Appointment appointment = new Appointment();
+                appointment.setTitle(request.getTitle() + " - Slot " + totalSlotNumber);
+                appointment.setAppointmentType(request.getAppointmentType());
+                appointment.setDate(date);
+                appointment.setStartTime(currentStartTime);
+                appointment.setEndTime(currentEndTime);
+                appointment.setLocation(request.getLocation());
+                appointment.setStatus("AVAILABLE");
+                appointment.setStudentEmail(null);
+                
+                appointments.add(appointmentRepository.save(appointment));
+                
+                currentStartTime = currentEndTime.plusMinutes(request.getGapBetweenMeetings());
+                totalSlotNumber++;
             }
-            
-            
-            Appointment appointment = new Appointment();
-            appointment.setTitle(request.getTitle() + " - Slot " + slotNumber);
-            appointment.setAppointmentType(request.getAppointmentType());
-            appointment.setDate(request.getDate());
-            appointment.setStartTime(currentStartTime);
-            appointment.setEndTime(currentEndTime);
-            appointment.setLocation(request.getLocation());
-            appointment.setStatus("AVAILABLE");
-            appointment.setStudentEmail(null);
-            
-            appointments.add(appointmentRepository.save(appointment));
-            
-            
-            currentStartTime = currentEndTime.plusMinutes(request.getGapBetweenMeetings());
-            slotNumber++;
         }
         
         return appointments;

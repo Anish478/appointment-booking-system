@@ -22,10 +22,6 @@ public class WebController {
 
     private final AppointmentService appointmentService;
 
-    @ModelAttribute(name = "scheduleRequest")
-    public AppointmentScheduleRequest scheduleRequest() {
-        return new AppointmentScheduleRequest();
-    }
 
     @GetMapping("/login")
     public String loginPage() {
@@ -75,8 +71,7 @@ public class WebController {
     }
     
     @PostMapping("/appointments")
-    public String processAppointment(@Valid @ModelAttribute("scheduleRequest") AppointmentScheduleRequest scheduleRequest, 
-                                     Errors errors, 
+    public String processAppointment(AppointmentScheduleRequest scheduleRequest, 
                                      HttpSession session,
                                      Model model) {
         User user = getCurrentUser(session);
@@ -86,11 +81,6 @@ public class WebController {
         
         if (!"PROFESSOR".equals(user.getRole())) {
             return "redirect:/";
-        }
-        
-        if (errors.hasErrors()) {
-            model.addAttribute("user", user);
-            return "create-appointment-prof";
         }
         
         // Create multiple appointment slots based on the schedule request

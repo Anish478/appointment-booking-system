@@ -2,71 +2,99 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Create Appointment Slots - Booking System</title>
+    <title>Create Appointment Slots</title>
   </head>
   
   <body>
     <h1>Create Appointment Slots</h1>
     <a th:href="@{/}">Home Page</a> | <a th:href="@{/logout}">Logout</a>
     <br/><br/>
-    <form method="POST" th:action="@{/appointments}" th:object="${scheduleRequest}">
-      <div class="form-group">
-        <label for="title">Appointment Title :</label>
-        <input type="text" th:field="*{title}" id="title" required placeholder="e.g., Office Hours"/>
-        <span class="validationError" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title Error</span>
+    
+    <form method="POST" th:action="@{/appointments}">
+      
+      <label for="title">Appointment Title:</label><br/>
+      <input type="text" name="title" id="title" required placeholder="e.g., Office Hours"/>
+      <br/><br/>
+      
+      <label for="appointmentType">Type:</label><br/>
+      <select name="appointmentType" id="appointmentType" required>
+        <option value="">-- Select --</option>
+        <option value="Group">Group</option>
+        <option value="Individual">Individual</option>
+      </select>
+      <br/><br/>
+      
+      <label for="meetingDuration">Meeting Duration (minutes):</label><br/>
+      <input type="number" name="meetingDuration" id="meetingDuration" required min="5" placeholder="30"/>
+      <br/><br/>
+      
+      <label for="gapBetweenMeetings">Gap Between Meetings (minutes):</label><br/>
+      <input type="number" name="gapBetweenMeetings" id="gapBetweenMeetings" required min="0" placeholder="10"/>
+      <br/><br/>
+      
+      <label for="location">Location:</label><br/>
+      <input type="text" name="location" id="location" required placeholder="e.g., Room 301"/>
+      <br/><br/>
+      
+      <hr/>
+      <h3>Days Schedule:</h3>
+      
+      <div id="daysContainer">
+        <!-- First day entry -->
+        <div class="day-entry">
+          <strong>Day 1:</strong><br/>
+          <label>Date:</label>
+          <input type="date" name="dates" required/>
+          
+          <label>Start Time:</label>
+          <input type="time" name="startTimes" required/>
+          
+          <label>End Time:</label>
+          <input type="time" name="endTimes" required/>
+          <br/><br/>
+        </div>
       </div>
       
-      <div class="form-group">
-        <label for="appointmentType">Appointment Type :</label>
-        <select th:field="*{appointmentType}" id="appointmentType" required>
-          <option value="">Select type</option>
-          <option value="Group">Group</option>
-          <option value="Individual">Individual</option>
-        </select>
-        <span class="validationError" th:if="${#fields.hasErrors('appointmentType')}" th:errors="*{appointmentType}">Type Error</span>
-      </div>
+      <button type="button" onclick="addDay()">+ Add Another Day</button>
+      <br/><br/>
       
-      <div class="form-group">
-        <label for="date">Date :</label>
-        <input type="date" th:field="*{date}" id="date" required/>
-        <span class="validationError" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">Date Error</span>
-      </div>
+      <hr/>
+      <button type="submit">Create All Appointment Slots</button>
+      <a th:href="@{/}">Cancel</a>
       
-      <div class="form-group">
-        <label for="startTime">Start Time :</label>
-        <input type="time" th:field="*{startTime}" id="startTime" required/>
-        <span class="validationError" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}">Start Time Error</span>
-      </div>
-      
-      <div class="form-group">
-        <label for="endTime">End Time :</label>
-        <input type="time" th:field="*{endTime}" id="endTime" required/>
-        <span class="validationError" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}">End Time Error</span>
-      </div>
-      
-      <div class="form-group">
-        <label for="meetingDuration">Meeting Duration (minutes) :</label>
-        <input type="number" th:field="*{meetingDuration}" id="meetingDuration" required min="5" step="5" placeholder="e.g., 30"/>
-        <span class="validationError" th:if="${#fields.hasErrors('meetingDuration')}" th:errors="*{meetingDuration}">Duration Error</span>
-      </div>
-      
-      <div class="form-group">
-        <label for="gapBetweenMeetings">Gap Between Meetings (minutes) :</label>
-        <input type="number" th:field="*{gapBetweenMeetings}" id="gapBetweenMeetings" required min="0" step="5" placeholder="e.g., 10"/>
-        <span class="validationError" th:if="${#fields.hasErrors('gapBetweenMeetings')}" th:errors="*{gapBetweenMeetings}">Gap Error</span>
-      </div>
-      
-      <div class="form-group">
-        <label for="location">Location :</label>
-        <input type="text" th:field="*{location}" id="location" required placeholder="e.g., Room 301"/>
-        <span class="validationError" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</span>
-      </div>
-      
-      <div>
-        <button type="submit">Create Appointment Slots</button>
-        <a th:href="@{/}">Cancel</a>
-      </div>
     </form>
+
+    <script>
+      let dayCount = 1;
+      
+      function addDay() {
+        dayCount++;
+        
+        const container = document.getElementById('daysContainer');
+        const newDay = document.createElement('div');
+        newDay.className = 'day-entry';
+        newDay.innerHTML = `
+          <strong>Day ${dayCount}:</strong><br/>
+          <label>Date:</label>
+          <input type="date" name="dates" required/>
+          
+          <label>Start Time:</label>
+          <input type="time" name="startTimes" required/>
+          
+          <label>End Time:</label>
+          <input type="time" name="endTimes" required/>
+          
+          <button type="button" onclick="removeDay(this)">Remove</button>
+          <br/><br/>
+        `;
+        
+        container.appendChild(newDay);
+      }
+      
+      function removeDay(button) {
+        button.parentElement.remove();
+      }
+    </script>
+
   </body>
 </html>
-

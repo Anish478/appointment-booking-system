@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,15 +22,6 @@ public class AppointmentScheduleRequest {
     @NotBlank(message = "Appointment type is required")
     private String appointmentType; 
 
-    @NotNull(message = "Date is required")
-    private LocalDate date;
-
-    @NotNull(message = "Start time is required")
-    private LocalTime startTime;
-
-    @NotNull(message = "End time is required")
-    private LocalTime endTime;
-
     @NotNull(message = "Meeting duration is required")
     @Min(value = 5, message = "Meeting duration must be at least 5 minutes")
     private Integer meetingDuration; 
@@ -40,5 +32,10 @@ public class AppointmentScheduleRequest {
 
     @NotBlank(message = "Location is required")
     private String location;
+
+    // Lists to hold multiple days
+    private List<String> dates;        // Will be sent as strings from form
+    private List<String> startTimes;   // Will be sent as strings from form
+    private List<String> endTimes;     // Will be sent as strings from form
 }
 
