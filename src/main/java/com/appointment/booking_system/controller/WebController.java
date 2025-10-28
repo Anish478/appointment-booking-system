@@ -116,6 +116,32 @@ public class WebController {
         return "redirect:/appointments/book";
     }
     
+    @PostMapping("/appointments/{id}/cancel")
+    public String cancelBooking(@PathVariable int id, HttpSession session) {
+        User user = getCurrentUser(session);
+        if (user == null) {
+            return "redirect:/login";
+        }
+        
+        appointmentService.cancelBooking(id, user.getEmail());
+        return "redirect:/appointments/book";
+    }
+    
+    @PostMapping("/appointments/{id}/delete")
+    public String deleteAppointment(@PathVariable int id, HttpSession session) {
+        User user = getCurrentUser(session);
+        if (user == null) {
+            return "redirect:/login";
+        }
+        
+        if (!"PROFESSOR".equals(user.getRole())) {
+            return "redirect:/";
+        }
+        
+        appointmentService.deleteAppointment(id);
+        return "redirect:/appointments/upcoming";
+    }
+    
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();

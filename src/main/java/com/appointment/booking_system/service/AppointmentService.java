@@ -41,21 +41,36 @@ public class AppointmentService {
         return null;
     }
 
+    public Appointment cancelBooking(int appointmentId, String studentEmail) {
+        Appointment appointment = findById(appointmentId);
+        if (appointment != null && "BOOKED".equals(appointment.getStatus()) 
+            && studentEmail.equals(appointment.getStudentEmail())) {
+            appointment.setStatus("AVAILABLE");
+            appointment.setStudentEmail(null);
+            return appointmentRepository.save(appointment);
+        }
+        return null;
+    }
+
+    public void deleteAppointment(int appointmentId) {
+        appointmentRepository.deleteById(appointmentId);
+    }
+
     public List<Appointment> createAppointmentSlots(AppointmentScheduleRequest request) {
         List<Appointment> appointments = new ArrayList<>();
         int totalSlotNumber = 1;
         
-        // Loop through each day configuration
+        
         for (int i = 0; i < request.getDates().size(); i++) {
             
-            // Parse date and times for this day
+            
             LocalDate date = LocalDate.parse(request.getDates().get(i));
             LocalTime dayStartTime = LocalTime.parse(request.getStartTimes().get(i));
             LocalTime dayEndTime = LocalTime.parse(request.getEndTimes().get(i));
             
             LocalTime currentStartTime = dayStartTime;
             
-            // Create slots for this date
+            
             while (currentStartTime.isBefore(dayEndTime)) {
                 
                 LocalTime currentEndTime = currentStartTime.plusMinutes(request.getMeetingDuration());
@@ -64,7 +79,7 @@ public class AppointmentService {
                     break; 
                 }
                 
-                // Create appointment
+                
                 Appointment appointment = new Appointment();
                 appointment.setTitle(request.getTitle() + " - Slot " + totalSlotNumber);
                 appointment.setAppointmentType(request.getAppointmentType());

@@ -33,9 +33,9 @@ public class AppointmentScheduleRequest {
     @NotBlank(message = "Location is required")
     private String location;
 
-    // Lists to hold multiple days
-    private List<String> dates;        // Will be sent as strings from form
-    private List<String> startTimes;   // Will be sent as strings from form
-    private List<String> endTimes;     // Will be sent as strings from form
+    
+    private List<String> dates;        
+    private List<String> startTimes;   
+    private List<String> endTimes;     
 }
 

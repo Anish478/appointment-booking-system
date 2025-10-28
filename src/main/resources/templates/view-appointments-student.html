@@ -23,7 +23,11 @@
           <button type="submit">Book This Slot</button>
         </form>
         
-        <p th:if="${appointment.status == 'BOOKED'}" style="color: red;">Already Booked</p>
+        <form th:if="${appointment.status == 'BOOKED' and appointment.studentEmail == user.email}" method="POST" th:action="@{/appointments/{id}/cancel(id=${appointment.id})}">
+          <button type="submit" style="background-color: orange; color: white;">Cancel My Booking</button>
+        </form>
+        
+        <p th:if="${appointment.status == 'BOOKED' and appointment.studentEmail != user.email}" style="color: red;">Already Booked by Another Student</p>
         
         <hr/>
       </div>
