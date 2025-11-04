@@ -19,7 +19,7 @@ public class BookingSystemApplication {
 	public CommandLineRunner loadData(UserRepository userRepository) {
 		return args -> {
 			
-			if (userRepository.count() > 0) {
+			if (userRepository.count() > 0) { 
 				return;
 			}
 		
@@ -38,7 +38,7 @@ public class BookingSystemApplication {
 				
 				userRepository.save(student);
 			}
-			
+
 			
 			for (int i = 1; i <= 2; i++) {
 				User ta = new User();
