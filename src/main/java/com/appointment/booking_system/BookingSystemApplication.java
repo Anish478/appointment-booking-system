@@ -20,21 +20,22 @@ public class BookingSystemApplication {
 		return args -> {
 			
 			if (userRepository.count() > 0) {
-				System.out.println("Dummy data already exists. Skipping...");
 				return;
 			}
-			
-
-
-			System.out.println("Creating dummy users...");
+		
 			
 			
-			for (int i = 1; i <= 10; i++) {
+			for (int i = 1; i <= 16; i++) {
 				User student = new User();
 				student.setName("Student " + i);
 				student.setEmail("student" + i + "@gmail.com");
 				student.setPassword("student123");
 				student.setRole("STUDENT");
+				
+				
+				int groupNumber = ((i - 1) / 4) + 1;
+				student.setGroupNumber(groupNumber);
+				
 				userRepository.save(student);
 			}
 			
@@ -55,11 +56,7 @@ public class BookingSystemApplication {
 			professor.setPassword("prof123");
 			professor.setRole("PROFESSOR");
 			userRepository.save(professor);
-			
-			System.out.println("Dummy data created successfully!");
-			System.out.println("Students: student1@gmail.com to student10@gmail.com (password: student123)");
-			System.out.println("TAs: ta1@gmail.com, ta2@gmail.com (password: ta123)");
-			System.out.println("Professor: professor@gmail.com (password: prof123)");
+		
 		};
 	}
 

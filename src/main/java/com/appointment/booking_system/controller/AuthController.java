@@ -37,10 +37,10 @@ public class AuthController {
     public User login(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) throws UserNotFoundException, WrongPasswordException {
         LOGGER.info("Login attempt for email: {}", loginRequest.getEmail());
         
-        // Validate credentials
+        
         userService.login(loginRequest);
         
-        // Get the full user object and store in session
+        
         Optional<User> user = userRepository.findByEmail(loginRequest.getEmail());
         if (user.isPresent()) {
             session.setAttribute("user", user.get());

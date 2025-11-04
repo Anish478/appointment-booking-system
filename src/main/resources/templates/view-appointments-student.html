@@ -10,6 +10,18 @@
     <a th:href="@{/}">Home Page</a> | <a th:href="@{/logout}">Logout</a>
     <br/><br/>
     
+    <p th:if="${user != null and user.groupNumber != null}">
+      <strong>You are in Group <span th:text="${user.groupNumber}">1</span></strong>
+    </p>
+    
+    <div th:if="${param.error}" style="color: red; background-color: #ffe6e6; padding: 10px; margin-bottom: 10px;">
+      <p><strong>Booking Failed!</strong></p>
+      <p>• For Individual slots: You can only book ONE individual appointment at a time. Cancel your current booking first.</p>
+      <p>• For Group slots: Only ONE slot per group allowed. Someone in your group may have already booked.</p>
+    </div>
+    
+    <br/>
+    
     <div th:if="${appointments != null and !appointments.empty}">
       <div th:each="appointment : ${appointments}">
         <h3 th:text="${appointment.title}">Appointment Title</h3>
@@ -19,15 +31,33 @@
         <p><strong>Location:</strong> <span th:text="${appointment.location}">Location</span></p>
         <p><strong>Status:</strong> <span th:text="${appointment.status}">Status</span></p>
         
+        
         <form th:if="${appointment.status == 'AVAILABLE'}" method="POST" th:action="@{/appointments/{id}/book(id=${appointment.id})}">
           <button type="submit">Book This Slot</button>
         </form>
+        
         
         <form th:if="${appointment.status == 'BOOKED' and appointment.studentEmail == user.email}" method="POST" th:action="@{/appointments/{id}/cancel(id=${appointment.id})}">
           <button type="submit" style="background-color: orange; color: white;">Cancel My Booking</button>
         </form>
         
-        <p th:if="${appointment.status == 'BOOKED' and appointment.studentEmail != user.email}" style="color: red;">Already Booked by Another Student</p>
+        
+        <p th:if="${appointment.status == 'BOOKED' and appointment.studentEmail != user.email and appointment.appointmentType == 'Individual'}" 
+           style="color: red;">
+          Already Booked by Another Student
+        </p>
+        
+        
+        <p th:if="${appointment.status == 'BOOKED' and appointment.studentEmail != user.email and appointment.appointmentType == 'Group' and appointment.bookedByGroup != null and appointment.bookedByGroup == user.groupNumber}" 
+           style="color: red;">
+          <strong>Already Booked by One of Your Group Members</strong>
+        </p>
+        
+        
+        <p th:if="${appointment.status == 'BOOKED' and appointment.studentEmail != user.email and appointment.appointmentType == 'Group' and (appointment.bookedByGroup == null or appointment.bookedByGroup != user.groupNumber)}" 
+           style="color: red;">
+          Already Booked by Another Group
+        </p>
         
         <hr/>
       </div>

@@ -75,7 +75,7 @@
 
               if (response.ok) {
                   const result = await response.json();
-                  window.location.href = '/login';  // Redirect to login page after successful registration
+                  window.location.href = '/login';  
               } else {
                   const error = await response.json();
                   errorDiv.textContent = error.message || 'Registration failed. Please try again.';

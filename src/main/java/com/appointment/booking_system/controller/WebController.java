@@ -83,7 +83,7 @@ public class WebController {
             return "redirect:/";
         }
         
-        // Create multiple appointment slots based on the schedule request
+        
         List<Appointment> createdAppointments = appointmentService.createAppointmentSlots(scheduleRequest);
         
         model.addAttribute("successMessage", 
@@ -112,7 +112,13 @@ public class WebController {
             return "redirect:/login";
         }
         
-        appointmentService.bookAppointment(id, user.getEmail());
+        Appointment result = appointmentService.bookAppointment(id, user.getEmail());
+        
+        if (result == null) {
+            
+            return "redirect:/appointments/book?error=true";
+        }
+        
         return "redirect:/appointments/book";
     }
     

@@ -40,6 +40,8 @@ public class Appointment {
     private String status = "AVAILABLE"; 
 
     private String studentEmail; 
+    
+    private Integer bookedByGroup; 
 
     @AssertTrue(message = "End time must be after start time")
     public boolean isTimeRangeValid() {

@@ -18,6 +18,9 @@ public class AppointmentService {
     @Autowired
     private AppointRepo appointmentRepository;
     
+    @Autowired
+    private com.appointment.booking_system.repository.UserRepository userRepository;
+    
 
     public Appointment createAppointment(Appointment a) {
         return appointmentRepository.save(a);
@@ -33,12 +36,56 @@ public class AppointmentService {
 
     public Appointment bookAppointment(int appointmentId, String studentEmail) {
         Appointment appointment = findById(appointmentId);
-        if (appointment != null && "AVAILABLE".equals(appointment.getStatus())) {
-            appointment.setStatus("BOOKED");
-            appointment.setStudentEmail(studentEmail);
-            return appointmentRepository.save(appointment);
+        if (appointment == null || !"AVAILABLE".equals(appointment.getStatus())) {
+            return null; 
         }
-        return null;
+        
+        
+        com.appointment.booking_system.model.User student = userRepository.findByEmail(studentEmail).orElse(null);
+        if (student == null) {
+            return null;
+        }
+        
+        String appointmentType = appointment.getAppointmentType();
+        
+        
+        if ("Individual".equals(appointmentType)) {
+           
+            java.util.List<Appointment> studentBookings = appointmentRepository.findByStudentEmail(studentEmail);
+            for (Appointment booked : studentBookings) {
+                if ("BOOKED".equals(booked.getStatus()) && "Individual".equals(booked.getAppointmentType())) {
+                    return null; 
+                }
+            }
+        }
+        
+        if ("Group".equals(appointmentType)) {
+            Integer studentGroup = student.getGroupNumber();
+            if (studentGroup != null) {
+                java.util.List<com.appointment.booking_system.model.User> groupMembers = 
+                    userRepository.findByGroupNumber(studentGroup);
+                
+                for (com.appointment.booking_system.model.User member : groupMembers) {
+                    java.util.List<Appointment> memberBookings = 
+                        appointmentRepository.findByStudentEmail(member.getEmail());
+                    
+                    for (Appointment booked : memberBookings) {
+                        if ("BOOKED".equals(booked.getStatus()) && "Group".equals(booked.getAppointmentType())) {
+                            return null; 
+                        }
+                    }
+                }
+            }
+        }
+        
+        appointment.setStatus("BOOKED");
+        appointment.setStudentEmail(studentEmail);
+        
+        if (student.getGroupNumber() != null) {
+            appointment.setBookedByGroup(student.getGroupNumber());
+        }
+        
+        return appointmentRepository.save(appointment);
     }
 
     public Appointment cancelBooking(int appointmentId, String studentEmail) {
@@ -47,6 +94,7 @@ public class AppointmentService {
             && studentEmail.equals(appointment.getStudentEmail())) {
             appointment.setStatus("AVAILABLE");
             appointment.setStudentEmail(null);
+            appointment.setBookedByGroup(null); 
             return appointmentRepository.save(appointment);
         }
         return null;
