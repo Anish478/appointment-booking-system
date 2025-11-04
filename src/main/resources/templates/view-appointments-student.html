@@ -20,6 +20,11 @@
       <p>• For Group slots: Only ONE slot per group allowed. Someone in your group may have already booked.</p>
     </div>
     
+    <div th:if="${param.cancelError}" style="color: red; background-color: #ffe6e6; padding: 10px; margin-bottom: 10px;">
+      <p><strong>Cancellation Failed!</strong></p>
+      <p>• You cannot cancel after the appointment start time has passed.</p>
+    </div>
+    
     <br/>
     
     <div th:if="${appointments != null and !appointments.empty}">

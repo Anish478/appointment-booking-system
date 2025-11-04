@@ -105,6 +105,23 @@ public class WebController {
         return "view-appointments-prof";
     }
     
+    @GetMapping("/appointments/view-all")
+    public String viewAllAppointmentsTA(Model model, HttpSession session) {
+        User user = getCurrentUser(session);
+        if (user == null) {
+            return "redirect:/login";
+        }
+        
+        if (!"TA".equals(user.getRole())) {
+            return "redirect:/";
+        }
+        
+        List<Appointment> appointments = appointmentService.findAll();
+        model.addAttribute("appointments", appointments);
+        model.addAttribute("user", user);
+        return "view-appointments-ta";
+    }
+    
     @PostMapping("/appointments/{id}/book")
     public String bookAppointment(@PathVariable int id, HttpSession session) {
         User user = getCurrentUser(session);
@@ -129,7 +146,13 @@ public class WebController {
             return "redirect:/login";
         }
         
-        appointmentService.cancelBooking(id, user.getEmail());
+        Appointment result = appointmentService.cancelBooking(id, user.getEmail());
+        
+        if (result == null) {
+            // Cancellation failed - time has passed
+            return "redirect:/appointments/book?cancelError=true";
+        }
+        
         return "redirect:/appointments/book";
     }
     

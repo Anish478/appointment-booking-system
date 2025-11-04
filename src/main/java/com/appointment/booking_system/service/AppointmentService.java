@@ -1,6 +1,7 @@
 package com.appointment.booking_system.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.appointment.booking_system.dto.AppointmentScheduleRequest;
 import com.appointment.booking_system.model.Appointment;
 import com.appointment.booking_system.repository.AppointRepo;
+import com.appointment.booking_system.repository.UserRepository;
+import com.appointment.booking_system.model.User;
 
 @Service
 public class AppointmentService {
@@ -19,7 +22,7 @@ public class AppointmentService {
     private AppointRepo appointmentRepository;
     
     @Autowired
-    private com.appointment.booking_system.repository.UserRepository userRepository;
+    private UserRepository userRepository;
     
 
     public Appointment createAppointment(Appointment a) {
@@ -40,8 +43,19 @@ public class AppointmentService {
             return null; 
         }
         
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime slotTime = LocalDateTime.of(
+            appointment.getDate(), 
+            appointment.getStartTime()
+        );
         
-        com.appointment.booking_system.model.User student = userRepository.findByEmail(studentEmail).orElse(null);
+
+        if (currentTime.isAfter(slotTime)) {
+            return null; 
+        }
+
+        User student = userRepository.findByEmail(studentEmail).orElse(null);
         if (student == null) {
             return null;
         }
@@ -50,8 +64,8 @@ public class AppointmentService {
         
         
         if ("Individual".equals(appointmentType)) {
-           
-            java.util.List<Appointment> studentBookings = appointmentRepository.findByStudentEmail(studentEmail);
+
+            List<Appointment> studentBookings = appointmentRepository.findByStudentEmail(studentEmail);
             for (Appointment booked : studentBookings) {
                 if ("BOOKED".equals(booked.getStatus()) && "Individual".equals(booked.getAppointmentType())) {
                     return null; 
@@ -62,12 +76,10 @@ public class AppointmentService {
         if ("Group".equals(appointmentType)) {
             Integer studentGroup = student.getGroupNumber();
             if (studentGroup != null) {
-                java.util.List<com.appointment.booking_system.model.User> groupMembers = 
-                    userRepository.findByGroupNumber(studentGroup);
-                
-                for (com.appointment.booking_system.model.User member : groupMembers) {
-                    java.util.List<Appointment> memberBookings = 
-                        appointmentRepository.findByStudentEmail(member.getEmail());
+                List<User> groupMembers = userRepository.findByGroupNumber(studentGroup);
+
+                for (User member : groupMembers) {
+                    List<Appointment> memberBookings = appointmentRepository.findByStudentEmail(member.getEmail());
                     
                     for (Appointment booked : memberBookings) {
                         if ("BOOKED".equals(booked.getStatus()) && "Group".equals(booked.getAppointmentType())) {
@@ -92,6 +104,37 @@ public class AppointmentService {
         Appointment appointment = findById(appointmentId);
         if (appointment != null && "BOOKED".equals(appointment.getStatus()) 
             && studentEmail.equals(appointment.getStudentEmail())) {
+            
+
+            LocalDateTime currentTime = LocalDateTime.now();
+            LocalDate appointmentDate = appointment.getDate();
+
+
+            List<Appointment> allAppointments = appointmentRepository.findAll();
+            LocalDateTime earliestSlotTimeOnThatDate = null;
+            
+            for (Appointment slot : allAppointments) {
+               
+                if (slot.getDate().isEqual(appointmentDate)) {
+                    LocalDateTime slotTime = LocalDateTime.of(
+                        slot.getDate(), 
+                        slot.getStartTime()
+                    );
+                    
+                   
+                    if (earliestSlotTimeOnThatDate == null) {
+                        earliestSlotTimeOnThatDate = slotTime;
+                    } else if (slotTime.isBefore(earliestSlotTimeOnThatDate)) {
+                        earliestSlotTimeOnThatDate = slotTime;
+                    }
+                }
+            }
+            
+            
+            if (earliestSlotTimeOnThatDate != null && currentTime.isAfter(earliestSlotTimeOnThatDate)) {
+                return null;
+            }
+            
             appointment.setStatus("AVAILABLE");
             appointment.setStudentEmail(null);
             appointment.setBookedByGroup(null); 

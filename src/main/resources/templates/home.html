@@ -12,11 +12,20 @@
       <h2>Hi, <span th:text="${user.name}">User</span>!</h2>
       <p><a th:href="@{/logout}">Logout</a></p>
       
-      <div th:if="${user.role == 'STUDENT' or user.role == 'TA'}">
+      <div th:if="${user.role == 'STUDENT'}">
         <div class="grid">
           <div class="option-group">
             <h4>View Available Appointments</h4>
             <a th:href="@{/appointments/book}">View Available Appointments</a>
+          </div>
+        </div>
+      </div>
+      
+      <div th:if="${user.role == 'TA'}">
+        <div class="grid">
+          <div class="option-group">
+            <h4>View All Appointments</h4>
+            <a th:href="@{/appointments/view-all}">View All Appointments</a>
           </div>
         </div>
       </div>

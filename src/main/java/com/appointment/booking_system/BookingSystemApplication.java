@@ -7,11 +7,15 @@ import org.springframework.context.annotation.Bean;
 
 import com.appointment.booking_system.model.User;
 import com.appointment.booking_system.repository.UserRepository;
+import java.util.TimeZone;
 
 @SpringBootApplication
 public class BookingSystemApplication {
 
 	public static void main(String[] args) {
+
+		TimeZone.setDefault(TimeZone.getTimeZone("America/Indiana/Indianapolis"));
+		
 		SpringApplication.run(BookingSystemApplication.class, args);
 	}
 
